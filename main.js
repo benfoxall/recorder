@@ -8,6 +8,11 @@ const start = async () => {
       audio: false,
     });
 
+    const video = document.createElement("video");
+    video.srcObject = media;
+    video.autoplay = true;
+    document.body.appendChild(video);
+
     var options = { mimeType: "video/webm; codecs=vp9" };
     const mediaRecorder = new MediaRecorder(media, options);
 
@@ -29,15 +34,15 @@ const start = async () => {
       mediaRecorder.stop();
     }, 3000);
 
-    const blob = await finish;
+    // const blob = await finish;
 
-    var url = URL.createObjectURL(blob);
+    // var url = URL.createObjectURL(blob);
 
-    const video = document.createElement("video");
-    video.src = url;
-    video.controls = true;
+    // const video = document.createElement("video");
+    // video.src = url;
+    // video.controls = true;
 
-    document.body.appendChild(video);
+    // document.body.appendChild(video);
   } catch (e) {
     console.error(e);
   }
