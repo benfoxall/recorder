@@ -1,16 +1,18 @@
-const video = document.createElement("video");
-video.autoplay = true;
+const button = document.querySelector("button");
 
-const a = document.createElement("a");
+const link = document.createElement("a");
+const video = document.createElement("video");
+const error = document.createElement("output");
 
 async function start() {
-  await click(document.querySelector("#record"));
+  await click(button);
 
   const stream = await navigator.mediaDevices.getDisplayMedia({
     audio: false,
     video: true,
   });
 
+  video.autoplay = true;
   video.srcObject = stream;
   document.body.appendChild(video);
 
@@ -40,27 +42,30 @@ async function start() {
     type: "video/webm",
   });
 
-  var url = URL.createObjectURL(blob);
-  a.href = url;
-  a.download = "capture.webm";
-  a.appendChild(video);
+  if (link.href) {
+    URL.revokeObjectURL(link.href);
+  }
 
-  document.body.append(a);
+  link.href = URL.createObjectURL(blob);
+  link.download = "capture.webm";
 
-  video.className = "sub";
+  document.body.append(link);
+  link.append(video);
+
   video.pause();
 }
 
 (async () => {
   try {
-    await start();
-    video.remove();
-  } catch (e) {
-    const output = document.createElement("output");
-    output.className = "err";
-    document.body.appendChild(output);
+    error.remove();
 
-    output.innerText = e;
+    await start();
+  } catch (e) {
+    video.remove();
+
+    document.body.appendChild(error);
+
+    error.innerText = e;
   }
 })();
 
