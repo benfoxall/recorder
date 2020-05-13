@@ -2,79 +2,11 @@
 
 <head>
   <title>📹</title>
-  <style>
-    :root {
-      --🤜: rgb(0, 255, 187);
-      --💕: rgb(191, 27, 255);
-      --👻: rgb(255, 160, 160);
-      --💥: #f59210;
-    }
-
-    body {
-      font-family: sans-serif;
-      background-color: var(--🤜);
-      color: var(--💕);
-      padding: 4em;
-
-    }
-
-    button {
-      font-size: 12vh;
-      font-family: inherit;
-      border: none;
-      background: none;
-      cursor: pointer;
-      font-weight: 800;
-
-      background-color: var(--💕);
-      color: var(--🤜);
-    }
-
-    button:hover {
-      color: var(--💕);
-      background-color: var(--👻);
-    }
-
-    body>video {
-      position: fixed;
-      object-fit: cover;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-    }
-
-    a {
-      display: block;
-      transition: all .5s;
-    }
-
-    a:hover {
-      transform: translateY(1em);
-    }
-
-    a>video {
-      position: relative;
-      object-fit: contain;
-      height: 30vh;
-      display: block;
-      margin: 2em 0;
-    }
-
-    output {
-      padding: .5em;
-      display: inline-block;
-      padding: 1vmin;
-      background: var(--💥);
-      color: var(--🤜);
-      margin: 1em 0;
-      font-weight: 800;
-    }
-  </style>
+  <link rel="stylesheet" href="main.css">
 </head>
 
 <button id="record">Record</button>
 
-<script src="./main.js"></script>
+<script src="./main.js" defer></script>
 
 </html>
