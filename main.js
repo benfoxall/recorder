@@ -1,51 +1,69 @@
-console.log("MAIN!");
+const video = document.createElement("video");
+video.autoplay = true;
 
-const record = document.querySelector("#record");
+const a = document.createElement("a");
 
-const start = async () => {
-  try {
-    const media = await navigator.mediaDevices.getDisplayMedia({
-      audio: false,
-    });
+async function start() {
+  await click(document.querySelector("#record"));
 
-    const video = document.createElement("video");
-    video.srcObject = media;
-    video.autoplay = true;
-    document.body.appendChild(video);
+  const media = await navigator.mediaDevices.getDisplayMedia({
+    audio: false,
+    video: true,
+  });
 
-    var options = { mimeType: "video/webm; codecs=vp9" };
-    const mediaRecorder = new MediaRecorder(media, options);
+  video.srcObject = media;
+  document.body.appendChild(video);
 
-    const finish = new Promise((resolve, reject) => {
-      const chunks = [];
+  var options = { mimeType: "video/webm; codecs=vp9" };
+  const mediaRecorder = new MediaRecorder(media, options);
 
-      mediaRecorder.onerror = reject;
+  // Also record the video
+  const chunks = [];
 
-      mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
+  mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
 
-      mediaRecorder.onstop = (e) =>
-        resolve(new Blob(chunks, { type: "video/webm" }));
-    });
+  const finish = new Promise((resolve) => (mediaRecorder.onstop = resolve));
 
-    mediaRecorder.start(1000);
+  mediaRecorder.start();
 
-    setTimeout(() => {
-      console.log("stopping");
-      mediaRecorder.stop();
-    }, 3000);
+  await click(video);
 
-    // const blob = await finish;
+  console.log("stopping");
 
-    // var url = URL.createObjectURL(blob);
+  mediaRecorder.stop();
+  video.pause();
 
-    // const video = document.createElement("video");
-    // video.src = url;
-    // video.controls = true;
+  // debugger;
+  media.getTracks().forEach((track) => track.stop());
 
-    // document.body.appendChild(video);
-  } catch (e) {
-    console.error(e);
-  }
-};
+  await finish;
 
-record.addEventListener("click", start);
+  const blob = new Blob(chunks, {
+    type: "video/webm",
+  });
+
+  var url = URL.createObjectURL(blob);
+  a.href = url;
+  a.download = "capture.webm";
+  a.appendChild(video);
+
+  document.body.append(a);
+
+  video.className = "sub";
+  video.pause();
+}
+
+try {
+  start();
+
+  video.remove();
+} catch (e) {}
+
+function click(element) {
+  return new Promise((resolve) =>
+    element.addEventListener("click", function handle(e) {
+      element.removeEventListener("click", handle);
+      resolve(e);
+    })
+  );
+}

@@ -1,44 +1,60 @@
 <html>
 
 <head>
-  <title>📹 Gif Capture</title>
+  <title>📹</title>
   <style>
+    :root {
+      --🤜: rgb(255, 239, 13);
+      --💕: #000;
+      --👻: #fff;
+    }
+
     body {
       font-family: sans-serif;
-      background: #f4f4f4;
+      background-color: var(--🤜);
+      color: var(--💕);
+      padding: 4em;
     }
 
-    #record {
-      background: red;
-      width: 6em;
-      height: 6em;
-      display: block;
+    button {
+      font-size: 12vh;
+      font-family: inherit;
       border: none;
-      border-radius: 50%;
-      transition: all .25s;
+      background: none;
+      font-weight: 800;
+
+      background-color: var(--💕);
+      color: var(--🤜);
       cursor: pointer;
-      margin: 3em auto;
     }
 
-    #record:hover {
-      opacity: 0.9;
-      box-shadow: 0 1px 5px;
+    button:hover {
+      color: var(--💕);
+      background-color: var(--👻);
+
     }
 
-    video {
+    body>video {
       position: fixed;
+      object-fit: cover;
       top: 0;
       left: 0;
-      right: 0;
       width: 100vw;
       height: 100vh;
-      object-fit: cover;
+    }
+
+    a>video {
+      position: relative;
+      object-fit: contain;
+      height: 30vh;
       display: block;
+      margin: 2em 0;
     }
   </style>
 </head>
 
 <button id="record">Record</button>
+
 <script src="./main.js"></script>
 
 </html>
