@@ -4,9 +4,10 @@
   <title>📹</title>
   <style>
     :root {
-      --🤜: rgb(255, 239, 13);
-      --💕: #000;
-      --👻: #fff;
+      --🤜: rgb(0, 255, 187);
+      --💕: rgb(191, 27, 255);
+      --👻: rgb(255, 160, 160);
+      --💥: #f59210;
     }
 
     body {
@@ -21,17 +22,16 @@
       font-family: inherit;
       border: none;
       background: none;
+      cursor: pointer;
       font-weight: 800;
 
       background-color: var(--💕);
       color: var(--🤜);
-      cursor: pointer;
     }
 
     button:hover {
       color: var(--💕);
       background-color: var(--👻);
-
     }
 
     body>video {
@@ -49,6 +49,16 @@
       height: 30vh;
       display: block;
       margin: 2em 0;
+    }
+
+    .err {
+      padding: .5em;
+      display: inline-block;
+      padding: 1vmin;
+      background: var(--💥);
+      color: var(--🤜);
+      margin: 1em 0;
+      font-weight: 800;
     }
   </style>
 </head>

@@ -6,35 +6,33 @@ const a = document.createElement("a");
 async function start() {
   await click(document.querySelector("#record"));
 
-  const media = await navigator.mediaDevices.getDisplayMedia({
+  const stream = await navigator.mediaDevices.getDisplayMedia({
     audio: false,
     video: true,
   });
 
-  video.srcObject = media;
+  video.srcObject = stream;
   document.body.appendChild(video);
 
   var options = { mimeType: "video/webm; codecs=vp9" };
-  const mediaRecorder = new MediaRecorder(media, options);
+
+  const recorder = new MediaRecorder(stream, options);
 
   // Also record the video
   const chunks = [];
+  recorder.ondataavailable = (event) => chunks.push(event.data);
 
-  mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
+  const finish = new Promise((resolve) => (recorder.onstop = resolve));
 
-  const finish = new Promise((resolve) => (mediaRecorder.onstop = resolve));
-
-  mediaRecorder.start();
+  recorder.start();
 
   await click(video);
 
   console.log("stopping");
 
-  mediaRecorder.stop();
   video.pause();
-
-  // debugger;
-  media.getTracks().forEach((track) => track.stop());
+  recorder.stop();
+  stream.getTracks().forEach((track) => track.stop());
 
   await finish;
 
@@ -53,11 +51,18 @@ async function start() {
   video.pause();
 }
 
-try {
-  start();
+(async () => {
+  try {
+    await start();
+    video.remove();
+  } catch (e) {
+    const output = document.createElement("output");
+    output.className = "err";
+    document.body.appendChild(output);
 
-  video.remove();
-} catch (e) {}
+    output.innerText = e;
+  }
+})();
 
 function click(element) {
   return new Promise((resolve) =>
