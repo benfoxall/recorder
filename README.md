@@ -1,10 +1,10 @@
-# gif-cap
+# Record
 
 ## Work in Progress
 
 ## Objective
 
-Make it easy to capture videos to throw into github PR descriptions
+Make quick gifs for github issues
 
 ## Flow
 
