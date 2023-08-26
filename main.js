@@ -3,6 +3,8 @@ const button = document.querySelector("button");
 const link = document.createElement("a");
 const video = document.createElement("video");
 const error = document.createElement("output");
+const recordingList = document.createElement("ol");
+document.body.appendChild(recordingList)
 
 const mediaConstaints = { audio: false, video: true };
 const recorderConstraints = { mimeType: "video/webm; codecs=vp9" };
@@ -53,6 +55,20 @@ async function Run() {
   link.append(video);
 
   video.pause();
+
+  const dir = await navigator.storage.getDirectory()
+
+  const recordings = await dir.getFileHandle('recs', {create: true});
+
+  const file = await recordings.getFileHandle(`rec-${new Date().toISOString()}.webm`, {create: true});
+
+  const writer = await file.createWritable();
+
+  await writer.write(blob)
+
+  await writable.close();
+
+  console.log("closed")
 }
 
 function Loop() {
@@ -75,3 +91,23 @@ function on(element, event) {
     })
   );
 }
+
+
+async function initFS() {
+  console.log("Origin File ")
+  const dir = await navigator.storage.getDirectory()
+
+  const recordings = await dir.getDirectoryHandle('recs', {create: true});
+
+  console.log(recordings)
+
+  for await(const file of recordings) {
+
+    const li = document.createElement('li')
+    li.innerText = 'Recording! ' + file.name 
+    recordingList.append(li)
+  }
+}
+
+
+initFS();
