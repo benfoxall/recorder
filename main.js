@@ -3,6 +3,8 @@ const button = document.querySelector("button");
 const link = document.createElement("a");
 const video = document.createElement("video");
 const error = document.createElement("output");
+const recordingList = document.createElement("ol");
+document.body.appendChild(recordingList)
 
 const mediaConstaints = { audio: false, video: true };
 const recorderConstraints = { mimeType: "video/webm; codecs=vp9" };
@@ -14,6 +16,8 @@ async function Run() {
   await on(button, "click");
 
   error.remove();
+
+  const filename = fname(new Date, 'webm');
 
   const stream = await navigator.mediaDevices.getDisplayMedia(mediaConstaints);
 
@@ -31,8 +35,14 @@ async function Run() {
 
   recorder.start();
 
-  // todo - handle external stop
-  await on(video, "click");
+  const trackEnded = new Promise(ended => {
+    for (const track of stream.getTracks()) {
+      track.addEventListener("ended", ended)
+    }
+  })
+  const videoClicked = on(video, "click");
+
+  await Promise.race([videoClicked, trackEnded])
 
   video.pause();
   recorder.stop();
@@ -53,6 +63,18 @@ async function Run() {
   link.append(video);
 
   video.pause();
+
+  const dir = await navigator.storage.getDirectory()
+
+  const recordings = await dir.getDirectoryHandle('recs', { create: true });
+
+  const file = await recordings.getFileHandle(filename, { create: true });
+
+  const writer = await file.createWritable();
+
+  await writer.write(blob)
+
+  await writer.close();
 }
 
 function Loop() {
@@ -63,6 +85,8 @@ function Loop() {
       document.body.appendChild(error);
 
       error.innerText = e;
+
+      console.error(e)
     })
     .then(Loop);
 }
@@ -74,4 +98,52 @@ function on(element, event) {
       resolve(e);
     })
   );
+}
+
+
+async function initFS() {
+  console.log("Origin File ")
+  const dir = await navigator.storage.getDirectory()
+
+  const recordings = await dir.getDirectoryHandle('recs', { create: true });
+
+  const list = [];
+  for await (const [name] of recordings) list.push(name)
+  list.sort().reverse()
+
+
+  for await (const name of list) {
+    const li = document.createElement('li')
+
+    const handle = await recordings.getFileHandle(name, {})
+    const file = await handle.getFile()
+    li.innerText = name
+
+    const v = document.createElement('video')
+    v.autoplay = true
+    v.loop = true
+    v.controls = true
+    v.muted = true
+    v.src = URL.createObjectURL(file)
+
+    li.appendChild(v)
+    recordingList.append(li)
+  }
+}
+
+
+initFS();
+
+function fname(date = new Date(), ext) {
+  const y = date.getFullYear()
+  const m = date.getMonth()
+  const d = date.getDate()
+
+  const h = date.getHours()
+  const mi = date.getMinutes()
+  const s = date.getSeconds()
+
+  return `Recording ${y}-${f(m)}-${f(d)} at ${f(h)}.${f(mi)}.${f(s)}.${ext}`
+
+  function f(s) { return s.toString().padStart(2, '0') }
 }
