@@ -115,7 +115,7 @@ async function initFS() {
   for await (const name of list) {
     const li = document.createElement('li')
 
-    const handle = recordings.getFileHandle(name, {})
+    const handle = await recordings.getFileHandle(name, {})
     const file = await handle.getFile()
     li.innerText = name
 
